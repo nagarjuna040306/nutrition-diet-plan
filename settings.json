@@ -1,0 +1,165 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class NutritionDietPlan extends JFrame {
+
+    // GUI Components
+    private JTextField bmiField, weightField, ageField;
+    private JTextArea resultArea;
+    private JButton nextButton;
+
+    // Fields to track the current day in the 7-day plan
+    private String[] dietPlanForWeek;
+    private int currentDay;
+
+    public NutritionDietPlan() {
+        // Setting up the frame
+        setTitle("Nutrition Diet Plan");
+        setSize(400, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setLayout(new GridLayout(7, 2, 5, 5));
+
+        // Create labels and text fields for input
+        JLabel bmiLabel = new JLabel("Enter BMI: ");
+        bmiField = new JTextField();
+
+        JLabel weightLabel = new JLabel("Enter Weight (kg): ");
+        weightField = new JTextField();
+
+        JLabel ageLabel = new JLabel("Enter Age: ");
+        ageField = new JTextField();
+
+        // Create button to submit
+        JButton submitButton = new JButton("Get Day 1 Diet Plan");
+
+        // Create button for next day
+        nextButton = new JButton("Next Day");
+        nextButton.setEnabled(false); // Initially disabled until the first plan is generated
+
+        // Create text area to display the result
+        resultArea = new JTextArea();
+        resultArea.setLineWrap(true);
+        resultArea.setWrapStyleWord(true);
+        resultArea.setEditable(false);
+
+        // Add action listener for the submit button
+        submitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                calculateDietPlan();
+            }
+        });
+
+        // Add action listener for the next button
+        nextButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                showNextDayPlan();
+            }
+        });
+
+        // Add components to the frame
+        add(bmiLabel);
+        add(bmiField);
+        add(weightLabel);
+        add(weightField);
+        add(ageLabel);
+        add(ageField);
+        add(submitButton);
+        add(nextButton);
+        add(new JLabel("Diet Plan:"));
+        add(new JScrollPane(resultArea)); // Scrollable text area
+
+        // Make the frame visible
+        setVisible(true);
+    }
+
+    // Method to calculate and display the diet plan for Day 1
+    private void calculateDietPlan() {
+        try {
+            // Parse input values
+            double bmi = Double.parseDouble(bmiField.getText());
+            double weight = Double.parseDouble(weightField.getText());
+            int age = Integer.parseInt(ageField.getText());
+
+            // Logic for diet plan based on BMI
+            String[] underweightPlan = {
+                    "Day 1: High-protein breakfast\nDay 2: Increase caloric intake\nDay 3: Add healthy snacks...",
+                    "Day 2: Add fruits and nuts...",
+                    "Day 3: More frequent meals...",
+                    "Day 4: Include lean meats...",
+                    "Day 5: Focus on whole grains...",
+                    "Day 6: Drink smoothies with protein...",
+                    "Day 7: Eat more frequently..."
+            };
+
+            String[] normalWeightPlan = {
+                    "Day 1: Balanced diet with fruits...",
+                    "Day 2: Include lean proteins...",
+                    "Day 3: Stay hydrated...",
+                    "Day 4: Whole grains, veggies...",
+                    "Day 5: Limit processed foods...",
+                    "Day 6: Moderate sugar intake...",
+                    "Day 7: Regular physical activity..."
+            };
+
+            String[] overweightPlan = {
+                    "Day 1: Reduce calorie intake...",
+                    "Day 2: Focus on vegetables...",
+                    "Day 3: Avoid sugary foods...",
+                    "Day 4: Include whole grains...",
+                    "Day 5: Low-fat dairy...",
+                    "Day 6: Increase water intake...",
+                    "Day 7: Plan physical activities..."
+            };
+
+            String[] obesityPlan = {
+                    "Day 1: Start with low-calorie meals...",
+                    "Day 2: Include high-fiber foods...",
+                    "Day 3: Avoid processed foods...",
+                    "Day 4: Include physical activities...",
+                    "Day 5: Drink more water...",
+                    "Day 6: Avoid late-night snacks...",
+                    "Day 7: Plan your meals carefully..."
+            };
+
+            // Select the appropriate 7-day plan based on BMI
+            if (bmi < 18.5) {
+                dietPlanForWeek = underweightPlan;
+            } else if (bmi >= 18.5 && bmi <= 24.9) {
+                dietPlanForWeek = normalWeightPlan;
+            } else if (bmi >= 25 && bmi <= 29.9) {
+                dietPlanForWeek = overweightPlan;
+            } else {
+                dietPlanForWeek = obesityPlan;
+            }
+
+            // Reset to Day 1 and show the first day's plan
+            currentDay = 0;
+            resultArea.setText(dietPlanForWeek[currentDay]);
+            nextButton.setEnabled(true); // Enable the "Next Day" button
+
+        } catch (NumberFormatException e) {
+            resultArea.setText("Please enter valid numerical values for BMI, weight, and age.");
+        }
+    }
+
+    // Method to show the next day's diet plan
+    private void showNextDayPlan() {
+        if (currentDay < 6) { // Show the next day's plan if within range
+            currentDay++;
+            resultArea.setText(dietPlanForWeek[currentDay]);
+        } else {
+            resultArea.setText("You have completed the 7-day diet plan.");
+            nextButton.setEnabled(false); // Disable the button after Day 7
+        }
+    }
+
+    public static void main(String[] args) {
+        // Run the application
+        SwingUtilities.invokeLater(() -> new NutritionDietPlan());
+    }
+}
